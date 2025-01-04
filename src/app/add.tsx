@@ -1,5 +1,5 @@
 import { Button } from "@/components/button";
-import { NoButton, YesButton } from "@/components/dietButton";
+import { DietButton } from "@/components/dietButton";
 import { Input } from "@/components/input";
 import { Label } from "@/components/label";
 import { router } from "expo-router";
@@ -52,11 +52,11 @@ export default function Add() {
 
         <Label title="Está dentro da dieta?" />
         <View className="justify-between flex-row gap-7">
-          <YesButton />
-          <NoButton />
+          <DietButton title="Sim" variant="in" variantCircle="in" />
+          <DietButton title="Não" variant="out" variantCircle="out" />
         </View>
 
-        <Button className="mt-20">
+        <Button className="mt-8">
           <Button.Title>Cadastrar refeição</Button.Title>
         </Button>
       </View>
