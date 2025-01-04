@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/Avatar";
 
 export function Header() {
   return (
-    <View className="flex-row items-center justify-between pt-3 pb-12">
+    <View className="flex-row items-center justify-between pt-10 pb-10">
       <Image source={LogoImg} className="w-24 h-10" />
 
       <Avatar className="size-11 border">

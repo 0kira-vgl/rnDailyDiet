@@ -1,58 +1,42 @@
+import { colors } from "@/styles/colors";
 import { ArrowUpRight } from "lucide-react-native";
 import { View, Text, Pressable, PressableProps } from "react-native";
 import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
 
-export type PercentCardProps = PressableProps & {
+type PercentCardProps = PressableProps & {
   title: string;
   subtitle: string;
-  variant?: "gray" | "green" | "red";
-  titleSize?: `text-${
-    | "xs"
-    | "sm"
-    | "base"
-    | "lg"
-    | "xl"
-    | "2xl"
-    | "3xl"
-    | "4xl"
-    | "5xl"
-    | "6xl"
-    | "7xl"
-    | "8xl"
-    | "9xl"}`;
+  variant?: "green" | "red";
 };
 
-export const card = tv({
-  base: "w-full h-36 bg-[#E5F0DB] rounded-lg flex-col items-center justify-center",
+const card = tv({
+  base: "w-full h-36 rounded-lg flex-col items-center justify-center",
   variants: {
     bg: {
-      gray: "bg-gray-6",
-      green: "bg-green-light",
-      red: "bg-red-light",
+      green: "bg-GREEN-300",
+      red: "bg-RED-300",
     },
-  },
-
-  defaultVariants: {
-    bg: "gray",
   },
 });
 
 export function PercentCard({
   title,
   subtitle,
-  variant,
-  className,
-  titleSize = "text-3xl",
+  variant = "green",
   ...rest
-}: PercentCardProps & { className?: string }) {
+}: PercentCardProps) {
   return (
-    <Pressable {...rest} className={twMerge(card({ bg: variant }), className)}>
+    <Pressable className={twMerge(card({ bg: variant }))} {...rest}>
       <View className="absolute top-4 right-4">
-        <ArrowUpRight color="#639339" size={25} />
+        <ArrowUpRight
+          color={colors.green[900]}
+          // color={colors.red[900]}
+          size={25}
+        />
       </View>
-      <Text className={twMerge("font-bold", titleSize)}>{title}%</Text>
-      <Text className="text-lg text-[#333638]">{subtitle}</Text>
+      <Text className="font-bold text-3xl">{title}%</Text>
+      <Text className="text-lg text-gray-800">{subtitle}</Text>
     </Pressable>
   );
 }
