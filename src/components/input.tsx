@@ -9,9 +9,12 @@ export function Input({
     <TextInput
       {...rest}
       className={twMerge(
-        "h-16 p-4 text-xl border border-[#DDDEDF] rounded-md",
+        "h-16 p-4 border border-[#DDDEDF] rounded-md",
         className
       )}
+      style={{
+        fontSize: 16,
+      }}
       placeholderTextColor="#9CA3AF"
     />
   );
