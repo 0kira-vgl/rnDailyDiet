@@ -58,6 +58,7 @@ export default function App() {
             variant={item.inDiet === true ? "green" : "red"}
             name={item.name}
             hour={item.hour}
+            onPress={() => router.navigate("/preview")}
           />
         )}
         ListEmptyComponent={() => {

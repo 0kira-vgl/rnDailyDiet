@@ -22,7 +22,10 @@ function Button({ children, className, ...rest }: TouchableOpacityProps) {
 }
 function Title({ children, className, ...rest }: TextProps) {
   return (
-    <Text className={twMerge("text-zinc-50 text-lg font-bold", className)}>
+    <Text
+      className={twMerge("text-zinc-50 text-lg font-bold", className)}
+      {...rest}
+    >
       {children}
     </Text>
   );
