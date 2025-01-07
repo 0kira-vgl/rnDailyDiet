@@ -8,7 +8,7 @@ import { useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Modal } from "react-native";
 
 export default function Edit() {
   const [name, setName] = useState("");

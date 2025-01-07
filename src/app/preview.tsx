@@ -5,11 +5,12 @@ import { useRoute } from "@react-navigation/native";
 import { router, useNavigation } from "expo-router";
 import { ArrowLeft, Edit3, Trash2 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Modal } from "react-native";
 import { twMerge } from "tailwind-merge";
 
 export default function Preview() {
   const [item, setItem] = useState<DietProps | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const route = useRoute();
   const { id } = route.params as DietProps;
@@ -40,10 +41,7 @@ export default function Preview() {
   }
 
   function handleRemove() {
-    Alert.alert("Excluir", "Deseja realmente excluir?", [
-      { style: "cancel", text: "Não" },
-      { style: "destructive", text: "Sim", onPress: itemRemove },
-    ]);
+    itemRemove();
   }
 
   useEffect(() => {
@@ -106,7 +104,7 @@ export default function Preview() {
 
         <Button
           className="border border-bg-GRAY-800 bg-transparent"
-          onPress={handleRemove}
+          onPress={() => setShowModal(true)}
         >
           <Trash2 size={20} color={colors.gray[800]} />
           <Button.Title className="text-GRAY-800">
@@ -114,6 +112,34 @@ export default function Preview() {
           </Button.Title>
         </Button>
       </View>
+
+      <Modal transparent visible={showModal}>
+        <View
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // deixa o fundo "meio escuro"
+          }}
+          className="flex-1 justify-center items-center px-12"
+        >
+          <View className="bg-GRAY-300 rounded-lg py-8 px-8">
+            <Text className="text-GRAY-800 font-bold text-xl text-center">
+              Deseja realmente excluir o registro da refeição?
+            </Text>
+
+            <View className="flex-row justify-between w-full mt-8 gap-4">
+              <Button
+                onPress={() => setShowModal(false)}
+                className="border border-bg-GRAY-800 bg-transparent flex-1"
+              >
+                <Button.Title className="text-GRAY-800">Cancelar</Button.Title>
+              </Button>
+
+              <Button onPress={handleRemove} className="flex-1">
+                <Button.Title>Sim, exluir</Button.Title>
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
