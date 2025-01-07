@@ -2,14 +2,15 @@ import { Button } from "@/components/button";
 import { DietButton } from "@/components/dietButton";
 import { Input } from "@/components/input";
 import { Label } from "@/components/label";
-import { dietStorage } from "@/storage/dietStorage";
+import { DietProps, dietStorage } from "@/storage/dietStorage";
 import { colors } from "@/styles/colors";
-import { router, useNavigation } from "expo-router";
+import { useRoute } from "@react-navigation/native";
+import { router } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 
-export default function Add() {
+export default function Edit() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -18,9 +19,30 @@ export default function Add() {
     null
   ); // estado para controlar qual botão está selecionado
 
-  const navigation = useNavigation();
+  const route = useRoute();
+  const { id } = route.params as DietProps;
 
-  async function handleAdd() {
+  async function getItem() {
+    try {
+      const response = await dietStorage.get();
+      const item = response.find((item) => item.id === id);
+
+      if (item) {
+        setName(item.name); // preenche os estados com os valores da refeição
+        setDescription(item.description);
+        setDate(item.date);
+        setHour(item.hour);
+        setSelectedOption(item.inDiet ? "in" : "out"); // converte o booleano para o formato esperado
+      } else {
+        Alert.alert("Erro", "Refeição não encontrada!");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar os detalhes da refeição");
+      console.log(error);
+    }
+  }
+
+  async function handleSave() {
     try {
       if (!name.trim()) {
         return Alert.alert("Nome", "Preencha o nome");
@@ -46,30 +68,31 @@ export default function Add() {
         );
       }
 
-      await dietStorage.save({
-        id: new Date().getTime().toString(), // gerando id
+      // atualiza a refeição no armazenamento
+      await dietStorage.update(id, {
+        id,
         name,
         description,
         date,
         hour,
-        inDiet: selectedOption === "in", // salva como booleano
+        inDiet: selectedOption === "in",
       });
 
-      Alert.alert("Sucesso", "Nova refeição adicionada!", [
-        // { text: "Ok", onPress: () => router.back() },
+      Alert.alert("Sucesso", "Refeição atualizada com sucesso!", [
         {
           text: "Ok",
-          onPress: () =>
-            navigation.navigate("feedback", {
-              inDiet: selectedOption === "in", // passa o valor booleano para feedback
-            }),
+          onPress: () => router.navigate("/"),
         },
       ]);
     } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao adicionar a refeição");
+      Alert.alert("Erro", "Ocorreu um erro ao salvar as alterações");
       console.error(error);
     }
   }
+
+  useEffect(() => {
+    getItem();
+  }, []);
 
   return (
     <View>
@@ -81,7 +104,7 @@ export default function Add() {
           >
             <ArrowLeft size={30} color={colors.gray[800]} />
           </TouchableOpacity>
-          <Text className="font-bold text-xl">Nova Refeição</Text>
+          <Text className="font-bold text-xl">Editar refeição</Text>
         </View>
       </View>
 
@@ -94,12 +117,13 @@ export default function Add() {
       >
         <View className="mb-8">
           <Label title="Nome" />
-          <Input onChangeText={setName} />
+          <Input value={name} onChangeText={setName} />
         </View>
 
         <View className="mb-8">
           <Label title="Descrição" />
           <Input
+            value={description}
             onChangeText={setDescription}
             multiline // transforma em uma "textarea"
             className="h-36"
@@ -112,15 +136,20 @@ export default function Add() {
         <View className="mb-8 justify-between flex-row gap-7">
           <View className="flex-1">
             <Label title="Data" />
-            <Input placeholder="dd/mm/aaaa" onChangeText={setDate} />
+            <Input
+              value={date}
+              placeholder="dd/mm/aaaa"
+              onChangeText={setDate}
+            />
           </View>
 
           <View className="w-36 flex-1">
             <Label title="Hora" />
             <Input
+              value={hour}
+              onChangeText={setHour}
               placeholder="hh:mm"
               keyboardType="numbers-and-punctuation"
-              onChangeText={setHour}
             />
           </View>
         </View>
@@ -143,8 +172,8 @@ export default function Add() {
           />
         </View>
 
-        <Button className="mt-8" onPress={handleAdd}>
-          <Button.Title>Cadastrar refeição</Button.Title>
+        <Button className="mt-8" onPress={handleSave}>
+          <Button.Title>Salvar alterações</Button.Title>
         </Button>
       </View>
     </View>

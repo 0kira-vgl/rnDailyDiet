@@ -29,6 +29,23 @@ async function save(newLink: DietProps) {
   }
 }
 
+// atualiza uma refeição existente no armazenamento
+async function update(id: string, updatedData: Partial<DietProps>) {
+  try {
+    const storage = await get();
+    const updatedStorage = storage.map(
+      (item) => (item.id === id ? { ...item, ...updatedData } : item) // atualiza os campos da refeição correspondente ao ID
+    );
+
+    await AsyncStorage.setItem(
+      DIET_STORAGE_KEY,
+      JSON.stringify(updatedStorage)
+    );
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function remove(id: string) {
   try {
     const storage = await get();
@@ -40,4 +57,4 @@ async function remove(id: string) {
   }
 }
 
-export const dietStorage = { get, save, remove };
+export const dietStorage = { get, save, update, remove };

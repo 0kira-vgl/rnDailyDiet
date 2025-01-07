@@ -14,7 +14,7 @@ export default function App() {
 
   const navigation = useNavigation();
 
-  async function getLinks() {
+  async function getItems() {
     try {
       const response = await dietStorage.get();
 
@@ -26,7 +26,7 @@ export default function App() {
 
   useFocusEffect(
     useCallback(() => {
-      getLinks();
+      getItems();
     }, []) // sempre que mudar a categoria ele renderiza dnv
   );
 
@@ -54,14 +54,11 @@ export default function App() {
         data={food}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        // contentContainerStyle={food.length === 0 && { flex: 1 }} // "centraliza" o ListEmpty caso a lista estiver vazia
         renderItem={({ item }) => (
           <FoodCard
             variant={item.inDiet === true ? "green" : "red"}
             name={item.name}
             hour={item.hour}
-            //@ts-ignore
-            // onPress={() => router.navigate("/preview", { id: item.id })}
             onPress={() =>
               navigation.navigate("preview", {
                 id: item.id,

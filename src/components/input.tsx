@@ -7,7 +7,6 @@ export function Input({
 }: TextInputProps & { className?: string }) {
   return (
     <TextInput
-      {...rest}
       className={twMerge(
         "h-16 p-4 border border-[#DDDEDF] rounded-md",
         className
@@ -16,6 +15,7 @@ export function Input({
         fontSize: 16,
       }}
       placeholderTextColor="#9CA3AF"
+      {...rest}
     />
   );
 }
