@@ -1,18 +1,19 @@
 import { Button } from "@/components/button";
 import { DietProps } from "@/storage/dietStorage";
 import { colors } from "@/styles/colors";
+import { useRoute } from "@react-navigation/native";
 import { router } from "expo-router";
 import { ArrowLeft, Edit3, Trash2 } from "lucide-react-native";
 import { View, Text, TouchableOpacity } from "react-native";
 import { twMerge } from "tailwind-merge";
 
-export default function Preview({
-  name,
-  description,
-  date,
-  hour,
-  inDiet,
-}: DietProps) {
+export default function Preview() {
+  const route = useRoute();
+  const { id, name, description, date, hour, inDiet } =
+    route.params as DietProps;
+
+  console.log(id);
+
   return (
     <View>
       <View

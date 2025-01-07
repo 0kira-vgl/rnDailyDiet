@@ -5,12 +5,14 @@ import { colors } from "../styles/colors";
 import { Header } from "@/components/header";
 import { PercentCard } from "@/components/percentCard";
 import { FoodCard } from "@/components/foodCard";
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useNavigation } from "expo-router";
 import { useCallback, useState } from "react";
 import { DietProps, dietStorage } from "@/storage/dietStorage";
 
 export default function App() {
   const [food, setFood] = useState<DietProps[]>([]);
+
+  const navigation = useNavigation();
 
   async function getLinks() {
     try {
@@ -58,7 +60,13 @@ export default function App() {
             variant={item.inDiet === true ? "green" : "red"}
             name={item.name}
             hour={item.hour}
-            onPress={() => router.navigate("/preview")}
+            //@ts-ignore
+            // onPress={() => router.navigate("/preview", { id: item.id })}
+            onPress={() =>
+              navigation.navigate("preview", {
+                id: item.id,
+              })
+            }
           />
         )}
         ListEmptyComponent={() => {
