@@ -49,14 +49,13 @@ export default function Preview() {
   }, [id]);
 
   return (
-    <View>
-      <View
-        className={twMerge(
-          item?.inDiet === true
-            ? "h-36 justify-center pt-10 bg-GREEN-300"
-            : "h-36 justify-center pt-10 bg-RED-300"
-        )}
-      >
+    <View
+      className={twMerge(
+        "flex-1",
+        item?.inDiet === true ? "bg-GREEN-300" : "bg-RED-300"
+      )}
+    >
+      <View className="h-36 justify-center pt-10">
         <View className="flex-row items-center justify-center relative">
           <TouchableOpacity
             onPress={() => router.back()}
@@ -68,7 +67,13 @@ export default function Preview() {
         </View>
       </View>
 
-      <View className="px-7 pt-12">
+      <View
+        className="px-7 pt-10 bg-GRAY-300 flex-1"
+        style={{
+          borderTopEndRadius: 20,
+          borderTopStartRadius: 20,
+        }}
+      >
         <View className="mb-7">
           <Text className="text-xl font-bold mb-4">{item?.name}</Text>
           <Text className="text-lg">{item?.description}</Text>
@@ -94,23 +99,23 @@ export default function Preview() {
             </>
           )}
         </View>
-      </View>
 
-      <View className="px-7 gap-2.5">
-        <Button onPress={() => navigation.navigate("edit", { id })}>
-          <Edit3 size={20} color={colors.gray[300]} />
-          <Button.Title>Editar refeição</Button.Title>
-        </Button>
+        <View className="gap-2.5 flex-1 justify-end pb-20">
+          <Button onPress={() => navigation.navigate("edit", { id })}>
+            <Edit3 size={20} color={colors.gray[300]} />
+            <Button.Title>Editar refeição</Button.Title>
+          </Button>
 
-        <Button
-          className="border border-bg-GRAY-800 bg-transparent"
-          onPress={() => setShowModal(true)}
-        >
-          <Trash2 size={20} color={colors.gray[800]} />
-          <Button.Title className="text-GRAY-800">
-            Excluir refeição
-          </Button.Title>
-        </Button>
+          <Button
+            className="border border-bg-GRAY-800 bg-transparent"
+            onPress={() => setShowModal(true)}
+          >
+            <Trash2 size={20} color={colors.gray[800]} />
+            <Button.Title className="text-GRAY-800">
+              Excluir refeição
+            </Button.Title>
+          </Button>
+        </View>
       </View>
 
       <Modal transparent visible={showModal}>

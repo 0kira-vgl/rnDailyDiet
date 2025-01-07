@@ -72,8 +72,8 @@ export default function Add() {
   }
 
   return (
-    <View>
-      <View className="bg-GRAY-500 h-36 justify-center pt-10">
+    <View className="flex-1 bg-GRAY-500">
+      <View className="h-36 justify-center pt-10">
         <View className="flex-row items-center justify-center relative">
           <TouchableOpacity
             onPress={() => router.back()}
@@ -86,10 +86,10 @@ export default function Add() {
       </View>
 
       <View
-        className="px-7 pt-12"
+        className="px-7 pt-10 bg-GRAY-300 flex-1"
         style={{
-          borderTopEndRadius: 15,
-          borderTopStartRadius: 15,
+          borderTopEndRadius: 20,
+          borderTopStartRadius: 20,
         }}
       >
         <View className="mb-8">
