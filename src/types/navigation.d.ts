@@ -1,7 +1,7 @@
 export declare global {
   namespace ReactNavigation {
     interface RootParamList {
-      preview: {
+      details: {
         id: string;
       };
       feedback: {

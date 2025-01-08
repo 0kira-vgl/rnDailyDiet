@@ -11,14 +11,31 @@ import { DietProps, dietStorage } from "@/storage/dietStorage";
 
 export default function App() {
   const [food, setFood] = useState<DietProps[]>([]);
+  const [totals, setTotals] = useState({
+    total: 0,
+    inDiet: 0,
+    percentageInDiet: 0, // porcentagem geral dentro da dieta
+  });
 
   const navigation = useNavigation();
 
   async function getItems() {
     try {
       const response = await dietStorage.get();
-
       setFood(response);
+
+      const total = response.length; // total
+      const inDiet = response.filter((item) => item.inDiet === true).length; // dentro da dieta
+
+      // calcula a porcentagem geral dentro da dieta (evita divisão por zero)
+      const percentageInDiet =
+        total > 0 ? Math.round((inDiet / total) * 100) : 0;
+
+      setTotals({
+        total,
+        inDiet,
+        percentageInDiet,
+      });
     } catch (error) {
       Alert.alert("Erro", "Não foi possível listar as refeições");
     }
@@ -27,7 +44,7 @@ export default function App() {
   useFocusEffect(
     useCallback(() => {
       getItems();
-    }, []) // sempre que mudar a categoria ele renderiza dnv
+    }, []) // sempre que mudar ele renderiza dnv
   );
 
   return (
@@ -35,9 +52,26 @@ export default function App() {
       <Header />
 
       <PercentCard
-        variant="green"
-        title="90,86"
-        subtitle="das refeições dentro da dieta"
+        variant={
+          totals.total === 0
+            ? "defult"
+            : totals.percentageInDiet >= 50
+            ? "green"
+            : "red"
+        }
+        title={totals.percentageInDiet}
+        iconColor={
+          totals.total === 0
+            ? colors.gray[800]
+            : totals.percentageInDiet >= 50
+            ? colors.green[900]
+            : colors.red[900]
+        }
+        subtitle={
+          totals.total === 0
+            ? "nehuma refeição cadastrada"
+            : "das refeições dentro da dieta"
+        }
         onPress={() => router.navigate("/status")}
       />
 
@@ -60,7 +94,7 @@ export default function App() {
             name={item.name}
             hour={item.hour}
             onPress={() =>
-              navigation.navigate("preview", {
+              navigation.navigate("details", {
                 id: item.id,
               })
             }

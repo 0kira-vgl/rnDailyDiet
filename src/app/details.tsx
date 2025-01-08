@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Alert, Modal } from "react-native";
 import { twMerge } from "tailwind-merge";
 
-export default function Preview() {
+export default function Details() {
   const [item, setItem] = useState<DietProps | null>(null);
   const [showModal, setShowModal] = useState(false);
 
