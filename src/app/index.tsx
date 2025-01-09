@@ -104,7 +104,7 @@ export default function App() {
 
       <Text className="text-lg mt-10 mb-2">Refeições</Text>
 
-      <Button onPress={() => router.navigate("/add")}>
+      <Button onPress={() => router.navigate("/create")}>
         <Plus size={24} color={colors.gray[300]} />
         <Button.Title>Nova refeição</Button.Title>
       </Button>

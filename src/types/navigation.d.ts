@@ -1,11 +1,11 @@
 export declare global {
   namespace ReactNavigation {
     interface RootParamList {
-      details: {
-        id: string;
-      };
       feedback: {
         inDiet: boolean;
+      };
+      details: {
+        id: string;
       };
       edit: {
         id: string;

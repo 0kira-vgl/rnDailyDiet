@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { parse, format } from "date-fns";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Edit() {
   const [name, setName] = useState("");
@@ -22,6 +23,7 @@ export default function Edit() {
   const [selectedOption, setSelectedOption] = useState<"in" | "out" | null>(
     null
   ); // estado para controlar qual botão está selecionado
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const route = useRoute();
   const { id } = route.params as DietProps;
@@ -113,7 +115,13 @@ export default function Edit() {
   }, []);
 
   return (
-    <View className="flex-1 bg-GRAY-500">
+    <KeyboardAwareScrollView
+      className="flex-1 bg-GRAY-500"
+      extraHeight={20} // adiciona espaço extra quando o teclado aparece
+      enableOnAndroid={true} // habilita para Android
+      keyboardShouldPersistTaps="handled" // fecha o teclado ao tocar fora
+      scrollEnabled={isInputFocused} // habilita o scroll apenas quando algum input estiver focado
+    >
       <View className="h-36 justify-center pt-10">
         <View className="flex-row items-center justify-center relative">
           <TouchableOpacity
@@ -127,12 +135,17 @@ export default function Edit() {
       </View>
 
       <View
-        className="px-7 pt-10 bg-GRAY-300 flex-1"
+        className="px-7 pt-10 bg-GRAY-300 flex-1 h-screen"
         style={{ borderTopEndRadius: 20, borderTopStartRadius: 20 }}
       >
         <View className="mb-8">
           <Label title="Nome" />
-          <Input value={name} onChangeText={setName} />
+          <Input
+            value={name}
+            onChangeText={setName}
+            onFocus={() => setIsInputFocused(true)}
+            onBlur={() => setIsInputFocused(false)}
+          />
         </View>
 
         <View className="mb-8">
@@ -143,6 +156,8 @@ export default function Edit() {
             multiline // transforma em uma "textarea"
             className="h-36"
             style={{ textAlignVertical: "top", fontSize: 16 }}
+            onFocus={() => setIsInputFocused(true)}
+            onBlur={() => setIsInputFocused(false)}
           />
         </View>
 
@@ -209,6 +224,6 @@ export default function Edit() {
           <Button.Title>Salvar alterações</Button.Title>
         </Button>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
