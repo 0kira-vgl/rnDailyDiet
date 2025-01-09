@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Alert } from "react-native";
+import { View, Text, SectionList, Alert } from "react-native";
 import { Button } from "../components/button";
 import { Plus } from "lucide-react-native";
 import { colors } from "../styles/colors";
@@ -10,7 +10,10 @@ import { useCallback, useState } from "react";
 import { DietProps, dietStorage } from "@/storage/dietStorage";
 
 export default function App() {
-  const [food, setFood] = useState<DietProps[]>([]);
+  const [sections, setSections] = useState<
+    { title: string; data: DietProps[] }[]
+  >([]);
+
   const [totals, setTotals] = useState({
     total: 0,
     inDiet: 0,
@@ -22,10 +25,30 @@ export default function App() {
   async function getItems() {
     try {
       const response = await dietStorage.get();
-      setFood(response);
 
-      const total = response.length; // total
-      const inDiet = response.filter((item) => item.inDiet === true).length; // dentro da dieta
+      // agrupa as refeições por data
+      const groupedByDate = response.reduce(
+        (acc: Record<string, DietProps[]>, item) => {
+          const date = item.date;
+          if (!acc[date]) acc[date] = [];
+          acc[date].push(item);
+          return acc;
+        },
+        {}
+      );
+
+      // Ordena as datas em ordem decrescente
+      const sectionsData = Object.keys(groupedByDate)
+        .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // mais recente primeiro
+        .map((date) => ({
+          title: date.replace(/(\d{4})$/, (match) => match.slice(-2)), // abrevia o ano
+          data: groupedByDate[date],
+        }));
+
+      setSections(sectionsData);
+
+      const total = response.length; // total de refeições cadastradas
+      const inDiet = response.filter((item) => item.inDiet === true).length; // total dentro da dieta
 
       // calcula a porcentagem geral dentro da dieta (evita divisão por zero)
       const percentageInDiet =
@@ -44,11 +67,11 @@ export default function App() {
   useFocusEffect(
     useCallback(() => {
       getItems();
-    }, []) // sempre que mudar ele renderiza dnv
+    }, [])
   );
 
   return (
-    <View className="flex-1 p-6 ">
+    <View className="flex-1 p-6">
       <Header />
 
       <PercentCard
@@ -69,7 +92,7 @@ export default function App() {
         }
         subtitle={
           totals.total === 0
-            ? "nehuma refeição cadastrada"
+            ? "Nenhuma refeição cadastrada"
             : "das refeições dentro da dieta"
         }
         onPress={() => router.navigate("/status")}
@@ -82,12 +105,15 @@ export default function App() {
         <Button.Title>Nova refeição</Button.Title>
       </Button>
 
-      <Text className="text-lg font-bold mt-9 mb-1.5">12/08/22</Text>
-
-      <FlatList
-        data={food}
+      <SectionList
+        sections={sections}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        renderSectionHeader={({ section: { title } }) => (
+          <View className="bg-GRAY-300">
+            <Text className="text-lg font-bold mt-8 mb-1.5">{title}</Text>
+          </View>
+        )}
         renderItem={({ item }) => (
           <FoodCard
             variant={item.inDiet === true ? "green" : "red"}
@@ -100,13 +126,11 @@ export default function App() {
             }
           />
         )}
-        ListEmptyComponent={() => {
-          return (
-            <View className="items-center mt-8">
-              <Text>Sem refeições cadastradas</Text>
-            </View>
-          );
-        }}
+        ListEmptyComponent={() => (
+          <View className="items-center mt-8">
+            <Text>Sem refeições cadastradas</Text>
+          </View>
+        )}
       />
     </View>
   );
