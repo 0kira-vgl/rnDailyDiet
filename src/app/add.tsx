@@ -9,38 +9,35 @@ import { ArrowLeft } from "lucide-react-native";
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Add() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
   const [hour, setHour] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false); // controle de visibilidade do DatePicker para data
-  const [showTimePicker, setShowTimePicker] = useState(false); // controle de visibilidade do DatePicker para hora
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedOption, setSelectedOption] = useState<"in" | "out" | null>(
     null
-  ); // estado para controlar a seleção de "dentro" ou "fora" da dieta
+  );
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const navigation = useNavigation();
 
-  // formata a data para "dd/mm/aaaa"
   const formattedDate = date.toLocaleDateString("pt-BR");
-
-  // formata a hora para "hh:mm"
   const formattedHour = hour.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
   });
 
-  // callback acionado quando o usuário seleciona uma data
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
-    setShowDatePicker(false); // fecha o DatePicker após a seleção
+    setShowDatePicker(false);
     if (selectedDate) {
-      setDate(selectedDate); // atualiza o estado com a data selecionada
+      setDate(selectedDate);
     }
   };
 
-  // callback acionado quando o usuário seleciona uma hora
   const handleTimeChange = (event: any, selectedTime: Date | undefined) => {
     setShowTimePicker(false);
     if (selectedTime) {
@@ -66,21 +63,28 @@ export default function Add() {
       }
 
       await dietStorage.save({
-        id: new Date().getTime().toString(), // gera um ID único com base no timestamp atual
+        id: new Date().getTime().toString(),
         name,
         description,
-        date: formattedDate, // usa a data formatada
+        date: formattedDate,
         hour: formattedHour,
-        inDiet: selectedOption === "in", // define se está dentro da dieta como booleano
+        inDiet: selectedOption === "in",
       });
 
       Alert.alert("Sucesso", "Nova refeição adicionada!", [
         {
           text: "Ok",
-          onPress: () =>
+          onPress: () => {
+            // Resetando os estados para limpar os campos
+            setName("");
+            setDescription("");
+            setDate(new Date());
+            setHour(new Date());
+            setSelectedOption(null);
             navigation.navigate("feedback", {
               inDiet: selectedOption === "in",
-            }),
+            });
+          },
         },
       ]);
     } catch (error) {
@@ -90,11 +94,17 @@ export default function Add() {
   }
 
   return (
-    <View className="flex-1 bg-GRAY-500">
+    <KeyboardAwareScrollView
+      className="flex-1 bg-GRAY-500"
+      extraHeight={20} // adiciona espaço extra quando o teclado aparece
+      enableOnAndroid={true} // habilita para Android
+      keyboardShouldPersistTaps="handled" // fecha o teclado ao tocar fora
+      scrollEnabled={isInputFocused} // habilita o scroll apenas quando algum input estiver focado
+    >
       <View className="h-36 justify-center pt-10">
         <View className="flex-row items-center justify-center relative">
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => router.replace("/")}
             className="left-7 absolute"
           >
             <ArrowLeft size={30} color={colors.gray[800]} />
@@ -104,7 +114,7 @@ export default function Add() {
       </View>
 
       <View
-        className="px-7 pt-10 bg-GRAY-300 flex-1"
+        className="px-7 pt-10 bg-GRAY-300 flex-1 h-screen"
         style={{
           borderTopEndRadius: 20,
           borderTopStartRadius: 20,
@@ -112,14 +122,22 @@ export default function Add() {
       >
         <View className="mb-8">
           <Label title="Nome" />
-          <Input onChangeText={setName} />
+          <Input
+            onChangeText={setName}
+            value={name}
+            onFocus={() => setIsInputFocused(true)}
+            onBlur={() => setIsInputFocused(false)}
+          />
         </View>
 
         <View className="mb-8">
           <Label title="Descrição" />
           <Input
+            onFocus={() => setIsInputFocused(true)}
+            onBlur={() => setIsInputFocused(false)}
             onChangeText={setDescription}
-            multiline // transforma em uma "textarea"
+            value={description}
+            multiline
             className="h-36"
             style={{
               textAlignVertical: "top",
@@ -131,18 +149,18 @@ export default function Add() {
           <View className="flex-1">
             <Label title="Data" />
             <TouchableOpacity
-              onPress={() => setShowDatePicker(true)} // mostra o DatePicker
+              onPress={() => setShowDatePicker(true)}
               className="border border-GRAY-500 rounded-md p-4 h-16 justify-center mb-2.5"
             >
               <Text className="text-xl">{formattedDate}</Text>
             </TouchableOpacity>
             {showDatePicker && (
               <DateTimePicker
-                value={date} // data atual
+                value={date}
                 mode="date"
                 locale="pt-br"
                 themeVariant="light"
-                onChange={handleDateChange} // callback para atualizar o estado
+                onChange={handleDateChange}
               />
             )}
           </View>
@@ -150,18 +168,18 @@ export default function Add() {
           <View className="w-36 flex-1">
             <Label title="Hora" />
             <TouchableOpacity
-              onPress={() => setShowTimePicker(true)} // Mostra o TimePicker
+              onPress={() => setShowTimePicker(true)}
               className="border border-GRAY-500 rounded-md p-4 h-16 justify-center mb-2.5"
             >
               <Text className="text-xl">{formattedHour}</Text>
             </TouchableOpacity>
             {showTimePicker && (
               <DateTimePicker
-                value={hour} // hora atual
+                value={hour}
                 mode="time"
                 themeVariant="light"
                 is24Hour={true}
-                onChange={handleTimeChange} // callback para atualizar o estado
+                onChange={handleTimeChange}
               />
             )}
           </View>
@@ -189,6 +207,6 @@ export default function Add() {
           <Button.Title>Cadastrar refeição</Button.Title>
         </Button>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }

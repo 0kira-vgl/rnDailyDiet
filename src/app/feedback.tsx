@@ -44,7 +44,7 @@ export default function Feedback() {
 
         <Button
           className="mt-10 gap-0 flex-col px-10"
-          onPress={() => router.navigate("/")}
+          onPress={() => router.replace("/")} // Alterado para router.replace
         >
           <Button.Title>Ir para a página inicial</Button.Title>
         </Button>

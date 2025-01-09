@@ -26,7 +26,6 @@ export default function App() {
     try {
       const response = await dietStorage.get();
 
-      // agrupa as refeições por data
       const groupedByDate = response.reduce(
         (acc: Record<string, DietProps[]>, item) => {
           const date = item.date;
@@ -39,7 +38,11 @@ export default function App() {
 
       // Ordena as datas em ordem decrescente
       const sectionsData = Object.keys(groupedByDate)
-        .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // mais recente primeiro
+        .sort((a, b) => {
+          const dateA = new Date(a.split("/").reverse().join("-")); // transforma em YYYY-MM-DD
+          const dateB = new Date(b.split("/").reverse().join("-"));
+          return dateB.getTime() - dateA.getTime(); // mais recente primeiro
+        })
         .map((date) => ({
           title: date.replace(/(\d{4})$/, (match) => match.slice(-2)), // abrevia o ano
           data: groupedByDate[date],
@@ -61,6 +64,7 @@ export default function App() {
       });
     } catch (error) {
       Alert.alert("Erro", "Não foi possível listar as refeições");
+      console.log(error);
     }
   }
 

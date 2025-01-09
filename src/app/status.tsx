@@ -7,7 +7,6 @@ import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { twMerge } from "tailwind-merge";
 
 export default function Status() {
-  const [food, setFood] = useState<DietProps[]>([]);
   const [bestSequence, setBestSequence] = useState(0);
   const [totals, setTotals] = useState({
     total: 0,
@@ -19,7 +18,6 @@ export default function Status() {
   async function getItems() {
     try {
       const response = await dietStorage.get();
-      setFood(response);
 
       const total = response.length; // total
       const inDiet = response.filter((item) => item.inDiet === true).length; // dentro da dieta

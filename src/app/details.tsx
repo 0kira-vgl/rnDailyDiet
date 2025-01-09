@@ -33,7 +33,7 @@ export default function Details() {
     try {
       await dietStorage.remove(id);
       getItem();
-      router.back();
+      router.replace("/");
     } catch (error) {
       Alert.alert("Erro", "Não foi possível excluir a refeição");
       console.log(error);

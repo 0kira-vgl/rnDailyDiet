@@ -99,7 +99,7 @@ export default function Edit() {
       Alert.alert("Sucesso", "Refeição atualizada com sucesso!", [
         {
           text: "Ok",
-          onPress: () => router.navigate("/"),
+          onPress: () => router.replace("/"),
         },
       ]);
     } catch (error) {
