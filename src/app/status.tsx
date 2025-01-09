@@ -8,6 +8,7 @@ import { twMerge } from "tailwind-merge";
 
 export default function Status() {
   const [food, setFood] = useState<DietProps[]>([]);
+  const [bestSequence, setBestSequence] = useState(0);
   const [totals, setTotals] = useState({
     total: 0,
     inDiet: 0,
@@ -34,12 +35,32 @@ export default function Status() {
         outDiet,
         percentageInDiet,
       });
+
+      // Calcular a melhor sequência dentro da dieta
+      const bestSeq = calculateBestSequence(response);
+      setBestSequence(bestSeq); // atualiza a melhor sequência
     } catch (error) {
       console.log(error);
       Alert.alert("Erro", "Não foi possível carregar os status", [
         { text: "Ok", onPress: () => router.back() },
       ]);
     }
+  }
+
+  function calculateBestSequence(meals: DietProps[]) {
+    let maxSeq = 0;
+    let currentSeq = 0;
+
+    for (const meal of meals) {
+      if (meal.inDiet) {
+        currentSeq++; // incrementa a sequência
+        maxSeq = Math.max(maxSeq, currentSeq); // Atualiza a melhor sequência
+      } else {
+        currentSeq = 0; // reseta a sequência quando não está na dieta
+      }
+    }
+
+    return maxSeq; // retorna a maior sequência
   }
 
   useFocusEffect(
@@ -82,7 +103,7 @@ export default function Status() {
             </Text>
             <Text className="text-lg text-gray-800">
               {totals.total === 0
-                ? "nehuma refeição cadastrada"
+                ? "nenhuma refeição cadastrada"
                 : "das refeições dentro da dieta"}
             </Text>
           </View>
@@ -102,7 +123,7 @@ export default function Status() {
 
         <View className="w-full">
           <View className="items-center justify-center bg-GRAY-400 rounded-lg h-32 mb-4">
-            <Text className="font-bold text-3xl pb-1.5">22</Text>
+            <Text className="font-bold text-3xl pb-1.5">{bestSequence}</Text>
             <Text className="text-lg text-text-GRAY-800">
               melhor sequência dentro da dieta
             </Text>
