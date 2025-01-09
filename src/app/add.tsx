@@ -8,17 +8,45 @@ import { router, useNavigation } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function Add() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [hour, setHour] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [hour, setHour] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false); // controle de visibilidade do DatePicker para data
+  const [showTimePicker, setShowTimePicker] = useState(false); // controle de visibilidade do DatePicker para hora
   const [selectedOption, setSelectedOption] = useState<"in" | "out" | null>(
     null
-  ); // estado para controlar qual botão está selecionado
+  ); // estado para controlar a seleção de "dentro" ou "fora" da dieta
 
   const navigation = useNavigation();
+
+  // formata a data para "dd/mm/aaaa"
+  const formattedDate = date.toLocaleDateString("pt-BR");
+
+  // formata a hora para "hh:mm"
+  const formattedHour = hour.toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  // callback acionado quando o usuário seleciona uma data
+  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowDatePicker(false); // fecha o DatePicker após a seleção
+    if (selectedDate) {
+      setDate(selectedDate); // atualiza o estado com a data selecionada
+    }
+  };
+
+  // callback acionado quando o usuário seleciona uma hora
+  const handleTimeChange = (event: any, selectedTime: Date | undefined) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+      setHour(selectedTime);
+    }
+  };
 
   async function handleAdd() {
     try {
@@ -26,17 +54,8 @@ export default function Add() {
         return Alert.alert("Nome", "Preencha o nome");
       }
 
-      // "trim()" remove o caracter "espaço"
       if (!description.trim()) {
         return Alert.alert("Descrição", "Preencha a descrição");
-      }
-
-      if (!date.trim()) {
-        return Alert.alert("Data", "Preencha a data");
-      }
-
-      if (!hour.trim()) {
-        return Alert.alert("Hora", "Preencha a hora");
       }
 
       if (!selectedOption) {
@@ -47,21 +66,20 @@ export default function Add() {
       }
 
       await dietStorage.save({
-        id: new Date().getTime().toString(), // gerando id
+        id: new Date().getTime().toString(), // gera um ID único com base no timestamp atual
         name,
         description,
-        date,
-        hour,
-        inDiet: selectedOption === "in", // salva como booleano
+        date: formattedDate, // usa a data formatada
+        hour: formattedHour,
+        inDiet: selectedOption === "in", // define se está dentro da dieta como booleano
       });
 
       Alert.alert("Sucesso", "Nova refeição adicionada!", [
-        // { text: "Ok", onPress: () => router.back() },
         {
           text: "Ok",
           onPress: () =>
             navigation.navigate("feedback", {
-              inDiet: selectedOption === "in", // passa o valor booleano para feedback
+              inDiet: selectedOption === "in",
             }),
         },
       ]);
@@ -112,16 +130,40 @@ export default function Add() {
         <View className="mb-8 justify-between flex-row gap-7">
           <View className="flex-1">
             <Label title="Data" />
-            <Input placeholder="dd/mm/aaaa" onChangeText={setDate} />
+            <TouchableOpacity
+              onPress={() => setShowDatePicker(true)} // mostra o DatePicker
+              className="border border-GRAY-500 rounded-md p-4 h-16 justify-center mb-2.5"
+            >
+              <Text className="text-xl">{formattedDate}</Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={date} // data atual
+                mode="date"
+                locale="pt-br"
+                themeVariant="light"
+                onChange={handleDateChange} // callback para atualizar o estado
+              />
+            )}
           </View>
 
           <View className="w-36 flex-1">
             <Label title="Hora" />
-            <Input
-              placeholder="hh:mm"
-              keyboardType="numbers-and-punctuation"
-              onChangeText={setHour}
-            />
+            <TouchableOpacity
+              onPress={() => setShowTimePicker(true)} // Mostra o TimePicker
+              className="border border-GRAY-500 rounded-md p-4 h-16 justify-center mb-2.5"
+            >
+              <Text className="text-xl">{formattedHour}</Text>
+            </TouchableOpacity>
+            {showTimePicker && (
+              <DateTimePicker
+                value={hour} // hora atual
+                mode="time"
+                themeVariant="light"
+                is24Hour={true}
+                onChange={handleTimeChange} // callback para atualizar o estado
+              />
+            )}
           </View>
         </View>
 
