@@ -58,7 +58,7 @@ export default function Details() {
       <View className="h-36 justify-center pt-10">
         <View className="flex-row items-center justify-center relative">
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => router.replace("/")}
             className="left-7 absolute"
           >
             <ArrowLeft size={30} color={colors.gray[800]} />

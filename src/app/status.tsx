@@ -40,7 +40,7 @@ export default function Status() {
     } catch (error) {
       console.log(error);
       Alert.alert("Erro", "Não foi possível carregar os status", [
-        { text: "Ok", onPress: () => router.back() },
+        { text: "Ok", onPress: () => router.navigate("/") },
       ]);
     }
   }
@@ -81,7 +81,7 @@ export default function Status() {
       <View className="h-48 justify-center pt-10">
         <View className="flex-row items-center justify-center relative">
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/")}
             className="left-7 bottom-12 absolute"
           >
             <ArrowLeft

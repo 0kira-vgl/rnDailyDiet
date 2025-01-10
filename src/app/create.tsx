@@ -71,22 +71,17 @@ export default function Create() {
         inDiet: selectedOption === "in",
       });
 
-      Alert.alert("Sucesso", "Nova refeição adicionada!", [
-        {
-          text: "Ok",
-          onPress: () => {
-            // Resetando os estados para limpar os campos
-            setName("");
-            setDescription("");
-            setDate(new Date());
-            setHour(new Date());
-            setSelectedOption(null);
-            navigation.navigate("feedback", {
-              inDiet: selectedOption === "in",
-            });
-          },
-        },
-      ]);
+      // resetando os estados para limpar os campos
+      setName("");
+      setDescription("");
+      setDate(new Date());
+      setHour(new Date());
+      setSelectedOption(null);
+
+      // Navegando para a tela de feedback
+      navigation.navigate("feedback", {
+        inDiet: selectedOption === "in",
+      });
     } catch (error) {
       Alert.alert("Erro", "Ocorreu um erro ao adicionar a refeição");
       console.error(error);
