@@ -10,6 +10,7 @@ import { useState } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Popup } from "@/components/popup";
 
 export default function Create() {
   const [name, setName] = useState("");
@@ -22,6 +23,11 @@ export default function Create() {
     null
   );
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [popup, setPopup] = useState({
+    visible: false,
+    title: "",
+    description: "",
+  });
 
   const navigation = useNavigation();
 
@@ -48,18 +54,28 @@ export default function Create() {
   async function handleAdd() {
     try {
       if (!name.trim()) {
-        return Alert.alert("Nome", "Preencha o nome");
+        return setPopup({
+          visible: true,
+          title: "Campo obrigatório",
+          description: "Por favor, preencha o nome.",
+        });
       }
 
       if (!description.trim()) {
-        return Alert.alert("Descrição", "Preencha a descrição");
+        return setPopup({
+          visible: true,
+          title: "Campo obrigatório",
+          description: "Por favor, preencha a descrição.",
+        });
       }
 
       if (!selectedOption) {
-        return Alert.alert(
-          "Dieta",
-          "Selecione se está dentro ou fora da dieta"
-        );
+        return setPopup({
+          visible: true,
+          title: "Escolha necessária",
+          description:
+            "Por favor, informe se a refeição está dentro ou fora da dieta.",
+        });
       }
 
       await dietStorage.save({
@@ -202,6 +218,13 @@ export default function Create() {
           <Button.Title>Cadastrar refeição</Button.Title>
         </Button>
       </View>
+
+      <Popup
+        title={popup.title}
+        description={popup.description}
+        showModal={popup.visible}
+        onClose={() => setPopup({ ...popup, visible: false })} // "...popup" atualiza o estado
+      />
     </KeyboardAwareScrollView>
   );
 }
