@@ -1,9 +1,10 @@
 import { Modal, ModalProps, View, Text } from "react-native";
 import { Button } from "./button";
+import { twMerge } from "tailwind-merge";
 
 type PopupProps = ModalProps & {
   title: string;
-  description: string;
+  description?: string | "";
   showModal: boolean;
   onClose: () => void;
 };
@@ -18,11 +19,17 @@ export function Popup({ title, description, showModal, onClose }: PopupProps) {
         className="flex-1 justify-center items-center px-12"
       >
         <View className="bg-GRAY-300 rounded-lg py-8 px-8">
-          <Text className="text-GRAY-800 font-bold text-xl text-center">
+          <Text className="text-GRAY-800 font-bold text-xl text-center mb-1.5">
             {title}
           </Text>
 
-          <Text className="text-GRAY-700 font-bold text-sm text-center mt-1.5">
+          <Text
+            className={twMerge(
+              description
+                ? "text-GRAY-700 font-bold text-sm text-center"
+                : "hidden"
+            )} // se n tiver nada, ele fica invisivel
+          >
             {description}
           </Text>
 

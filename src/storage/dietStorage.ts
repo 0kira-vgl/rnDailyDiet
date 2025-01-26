@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const DIET_STORAGE_KEY = "diet-storage";
+const DIET_STORAGE_KEY = "diet-storage/meals";
+const AVATAR_STORAGE_KEY = "user/avatar";
 
 export type DietProps = {
   id: string;
@@ -57,4 +58,17 @@ async function remove(id: string) {
   }
 }
 
-export const dietStorage = { get, save, update, remove };
+async function getAvatar(): Promise<string | null> {
+  const storage = await AsyncStorage.getItem(AVATAR_STORAGE_KEY);
+  return storage; // retorna o URI salvo ou null
+}
+
+async function saveAvatar(uri: string) {
+  try {
+    await AsyncStorage.setItem(AVATAR_STORAGE_KEY, uri);
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const dietStorage = { get, save, update, remove, getAvatar, saveAvatar };
